@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e74b5c20-9512-44a7-8f49-0375d65261f1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/CloudImageApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/common/BaseResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/common/DeleteRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/common/PageRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/common/ResultUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/config/CorsConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/controller/MainController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/exception/BusinessException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/exception/ErrorCode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/java/com/polor/cloudimage/exception/ThrowUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/resources/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/main/resources/static/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cloud-image-backend/src/test/java/com/polor/cloudimage/CloudImageApplicationTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/cloud-image-backend" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="customMavenHome" value="C:\Program Files\apache-maven-3.6.3" />
+        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="340ZQMuforhm9M22KAS1inRLTsg" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MainTest.executor": "Debug",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.CloudImageApplication.executor": "Debug",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/porjects/Cloud_Image/cloud-image/cloud-image-backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\porjects\Cloud_Image\cloud-image\src\main\java\com\polor\cloudimage\common" />
+      <recent name="D:\porjects\Cloud_Image\cloud-image\src\main\java\com\polor\cloudimage\exception" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.CloudImageApplication">
+    <configuration name="MainTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.polor.cloudimage.MainTest" />
+      <module name="cloud-image" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.polor.cloudimage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CloudImageApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="cloud-image" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.polor.cloudimage.CloudImageApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.polor.cloudimage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.CloudImageApplication" />
+        <item itemvalue="Application.MainTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e74b5c20-9512-44a7-8f49-0375d65261f1" name="Changes" comment="" />
+      <created>1760352434647</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1760352434647</updated>
+      <workItem from="1760352435819" duration="1111000" />
+      <workItem from="1760353562118" duration="603000" />
+      <workItem from="1760354186541" duration="7346000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

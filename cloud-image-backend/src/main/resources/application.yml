@@ -1,0 +1,46 @@
+#  端口号和上下文路径配置
+server:
+  port: 8081
+  servlet:
+    context-path: /api
+
+#起个名字
+spring:
+  application:
+    name: my-spring-boot-app
+
+# 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cloud_image
+    username: root
+    password: 123456
+
+
+#mybatis-plus配置
+mybatis-plus:
+  configuration:
+    # MyBatis 配置
+    map-underscore-to-camel-case: true
+    #debug日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #逻辑删除
+    global-config:
+      db-config:
+        logic-delete-field: isDeleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+
+
+#接口文档
+knife4j:
+  enable: true
+  openapi:
+    title: 接口文档
+    version: v4.0
+    group:
+      test1:
+        group-name: 默认组
+        api-rule: package
+        api-rule-resources:
+          - com.polor.cloudimage.controller
