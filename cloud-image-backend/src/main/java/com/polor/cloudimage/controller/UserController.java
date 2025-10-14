@@ -1,11 +1,15 @@
 package com.polor.cloudimage.controller;
 
+import com.polor.cloudimage.annotation.AuthCheck;
 import com.polor.cloudimage.common.BaseResponse;
 import com.polor.cloudimage.common.ResultUtils;
+import com.polor.cloudimage.constant.UserConstant;
+import com.polor.cloudimage.exception.BusinessException;
 import com.polor.cloudimage.exception.ErrorCode;
 import com.polor.cloudimage.exception.ThrowUtils;
 import com.polor.cloudimage.model.dto.UserLoginRequest;
 import com.polor.cloudimage.model.dto.UserRegisterRequest;
+import com.polor.cloudimage.model.entity.User;
 import com.polor.cloudimage.model.vo.LoginUserVO;
 import com.polor.cloudimage.service.UserService;
 import com.polor.cloudimage.service.impl.UserServiceImpl;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +39,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
 
     /**
      * 用户注册
@@ -56,6 +60,26 @@ public class UserController {
         LoginUserVO loginUserVO = userService.userLogin(userLoginRequest, request);
         return ResultUtils.success(loginUserVO);
     }
+
+
+    @PostMapping("/get/login")
+    @ApiOperation(value = "获取当前登录用户")
+    public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        LoginUserVO loginUserVO = userService.getLoginUserVo(loginUser);
+        return ResultUtils.success(loginUserVO);
+    }
+
+
+    @PostMapping("/logout")
+    @ApiOperation(value = "用户注销")
+    public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
+        ThrowUtils.throwIf(request == null, ErrorCode.NOT_FOUND_ERROR);
+        boolean result = userService.userLogout(request);
+        return ResultUtils.success(result);
+    }
+
+
 
 
 }

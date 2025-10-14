@@ -73,6 +73,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return user.getId();
     }
 
+    /**
+     * 用户登录
+     *
+     * @param userLoginRequest 用户登录请求体
+     * @return 返回脱敏后的用户信息
+     */
     @Override
     public LoginUserVO userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
         //1 校验参数
@@ -106,6 +112,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     }
 
+    /**
+     * 获取当前登录用户
+     *
+     * @param request 请求
+     * @return 当前登录用户
+     */
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        Object attribute = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User currentUser = (User) attribute;
+        // 校验用户是否登录
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        // 从数据库查询用户最新信息
+        Long userId = currentUser.getId();
+        currentUser = this.getById(userId);
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return currentUser;
+    }
+
 
     /**
      * 获取加密后的密码
@@ -134,6 +163,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LoginUserVO loginUserVO = new LoginUserVO();
         BeanUtils.copyProperties(user, loginUserVO);
         return loginUserVO;
+    }
+
+    /**
+     * 用户注销
+     *
+     * @param request 请求
+     * @return 是否注销成功
+     */
+    @Override
+    public boolean userLogout(HttpServletRequest request) {
+        //判断是否登录
+        Object attribute = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        if (attribute == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        //删除登录信息
+        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        return true;
     }
 }
 
