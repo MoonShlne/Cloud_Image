@@ -23,10 +23,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-
+        <!--mybatis plus-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.5.14</version>
+        </dependency>
+
+        <!-- jdk 11+ 引入可选模块 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
             <version>3.5.14</version>
         </dependency>
 
@@ -68,6 +75,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>com.baomidou</groupId>-->
+<!--                <artifactId>mybatis-plus-bom</artifactId>-->
+<!--                <version>3.5.9</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -88,7 +103,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.polor.cloudimage.CloudImageApplication</mainClass>
+                    <mainClass>com.polar.cloudimage.CloudImageApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>
