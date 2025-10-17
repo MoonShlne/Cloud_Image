@@ -1,5 +1,4 @@
 <template>
-  <!-- @author polar <a href="https://github.com/MoonShlne/Cloud_Image">编程导航原创项目</a> -->
   <div id="addPictureBatchPage">
     <h2 style="margin-bottom: 16px">批量创建</h2>
     <!-- 图片信息表单 -->

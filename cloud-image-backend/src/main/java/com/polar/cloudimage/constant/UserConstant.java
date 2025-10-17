@@ -1,5 +1,8 @@
 package com.polar.cloudimage.constant;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 用户常量
  */
@@ -28,4 +31,6 @@ public interface UserConstant {
     String ADMIN_ROLE = "admin";
 
     // endregion
+
+
 }

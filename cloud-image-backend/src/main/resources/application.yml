@@ -1,6 +1,6 @@
 #  端口号和上下文路径配置
 server:
-  port: 8081
+  port: 8123
   servlet:
     context-path: /api
 
@@ -15,7 +15,10 @@ spring:
     url: jdbc:mysql://localhost:3306/cloud_image
     username: root
     password: 123456
-
+#    文件上传大小限制
+  servlet:
+    multipart:
+      max-file-size: 10MB
 
 #mybatis-plus配置
 mybatis-plus:
@@ -43,4 +46,6 @@ knife4j:
         group-name: 默认组
         api-rule: package
         api-rule-resources:
-          - com.polor.cloudimage.controller
+          - com.polar.cloudimage.controller
+
+

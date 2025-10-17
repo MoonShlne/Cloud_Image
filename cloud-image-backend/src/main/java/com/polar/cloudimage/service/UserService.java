@@ -1,9 +1,9 @@
 package com.polar.cloudimage.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.polar.cloudimage.model.dto.UserLoginRequest;
-import com.polar.cloudimage.model.dto.UserQueryRequest;
-import com.polar.cloudimage.model.dto.UserRegisterRequest;
+import com.polar.cloudimage.model.dto.user.UserLoginRequest;
+import com.polar.cloudimage.model.dto.user.UserQueryRequest;
+import com.polar.cloudimage.model.dto.user.UserRegisterRequest;
 import com.polar.cloudimage.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.polar.cloudimage.model.vo.LoginUserVO;

@@ -90,8 +90,8 @@ const originItems = [
   },
   {
     key: 'others',
-    label: h('a', { href: 'https://github.com/MoonShlne/Cloud_Image', target: '_blank' }, '编程导航'),
-    title: '编程导航',
+    label: h('a', { href: 'https://github.com/MoonShlne/Cloud_Image', target: '_blank' }, '作者主页'),
+    title: '作者主页',
   },
 ]
 

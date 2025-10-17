@@ -1,4 +1,4 @@
-package com.polar.cloudimage.model.dto;
+package com.polar.cloudimage.model.dto.user;
 
 import com.polar.cloudimage.common.PageRequest;
 import lombok.Data;

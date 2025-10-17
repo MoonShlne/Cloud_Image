@@ -11,7 +11,7 @@
         </a-layout-content>
       </a-layout>
       <a-layout-footer class="footer">
-        <a href="https://github.com/MoonShlne/Cloud_Image" target="_blank"> 编程导航 by Polar </a>
+        <a href="https://github.com/MoonShlne/Cloud_Image" target="_blank"> 作者主页 by Polar </a>
       </a-layout-footer>
     </a-layout>
   </div>

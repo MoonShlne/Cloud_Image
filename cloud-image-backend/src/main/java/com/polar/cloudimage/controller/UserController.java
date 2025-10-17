@@ -9,7 +9,7 @@ import com.polar.cloudimage.common.ResultUtils;
 import com.polar.cloudimage.constant.UserConstant;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
-import com.polar.cloudimage.model.dto.*;
+import com.polar.cloudimage.model.dto.user.*;
 import com.polar.cloudimage.model.entity.User;
 import com.polar.cloudimage.model.vo.LoginUserVO;
 import com.polar.cloudimage.model.vo.UserVO;
@@ -19,7 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -72,7 +71,7 @@ public class UserController {
      * @param request 请求
      * @return 当前登录用户
      */
-    @PostMapping("/get/login")
+    @GetMapping("/get/login")
     @ApiOperation(value = "获取当前登录用户")
     public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
