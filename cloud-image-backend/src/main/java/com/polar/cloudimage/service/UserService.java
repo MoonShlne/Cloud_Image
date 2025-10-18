@@ -93,4 +93,14 @@ public interface UserService extends IService<User> {
      * @return 用户查询条件
      */
     LambdaQueryWrapper<User>  getLambdaQueryWrapper(UserQueryRequest userQueryRequest);
+
+    /**
+     * 判断用户是否为管理员
+     *
+     * @param user 用户信息
+     * @return 是否为管理员
+     */
+    boolean isAdmin(User user);
 }
+
+

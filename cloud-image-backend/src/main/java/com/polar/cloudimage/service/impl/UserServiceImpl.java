@@ -238,7 +238,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         //拼接查询条件
         userLambdaQueryWrapper.eq(userQueryRequest.getId() != null, User::getId, userQueryRequest.getId());  //id
-          //userRole
+        //userRole
         userLambdaQueryWrapper.eq(StrUtil.isNotBlank(userQueryRequest.getUserRole()), User::getUserRole, userQueryRequest.getUserRole());
         //userAccount
         userLambdaQueryWrapper.like(StrUtil.isNotBlank(userQueryRequest.getUserAccount()), User::getUserAccount, userQueryRequest.getUserAccount());
@@ -247,10 +247,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         //userProfile
         userLambdaQueryWrapper.like(StrUtil.isNotBlank(userQueryRequest.getUserProfile()), User::getUserProfile, userQueryRequest.getUserProfile());
         //sort
-        userLambdaQueryWrapper.orderBy(StrUtil.isNotEmpty(userQueryRequest.getSortField()) ,userQueryRequest.getSortOrder().equals("ascend"), User::getId);
+        userLambdaQueryWrapper.orderBy(StrUtil.isNotEmpty(userQueryRequest.getSortField()), userQueryRequest.getSortOrder().equals("ascend"), User::getId);
 
         return userLambdaQueryWrapper;
 
+    }
+
+    /**
+     * 是否为管理员
+     *
+     * @param user 用户信息
+     * @return 是否为管理员
+     */
+    @Override
+    public boolean isAdmin(User user) {
+        return user != null && user.getUserRole().equals(UserRoleEnum.ADMIN.getValue());
     }
 }
 

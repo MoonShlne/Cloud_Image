@@ -81,7 +81,6 @@ public class FileManager {
             String format = imageInfo.getFormat();
             //宽高比
             double pictureScale = NumberUtil.round(NumberUtil.div(pictureWidth, pictureHeight), 2).doubleValue();
-
             UploadPictureResult uploadPictureResult = new UploadPictureResult();
             uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
             uploadPictureResult.setPicName(FileUtil.mainName(multipartFile.getOriginalFilename()));
