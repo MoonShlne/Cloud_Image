@@ -2,14 +2,10 @@ package com.polar.cloudimage.manager;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.unit.DataUnit;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
-import com.polar.cloudimage.common.ResultUtils;
 import com.polar.cloudimage.config.CosClientConfig;
 import com.polar.cloudimage.constant.PictureConstant;
-import com.polar.cloudimage.constant.UserConstant;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
@@ -17,29 +13,24 @@ import com.polar.cloudimage.model.dto.file.UploadPictureResult;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.ImageInfo;
-import com.qcloud.cos.model.ciModel.persistence.OriginalInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author polar
  * @version 1.0
  * @since 2025/10/15 18:32
  * 进一步封装上传下载方法
+ * 改为在 FilePictureUploadTemplate 中使用模板方法模式
  */
 @Service
 @Slf4j
+@Deprecated
 public class FileManager {
 
     @Resource
@@ -134,6 +125,7 @@ public class FileManager {
         String suffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
         ThrowUtils.throwIf(!PictureConstant.ALLOW_SUFFIX.contains(suffix), ErrorCode.PARAMS_ERROR, "文件格式不正确");
     }
+
 
 
 }

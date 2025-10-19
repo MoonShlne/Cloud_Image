@@ -10,12 +10,10 @@ import com.polar.cloudimage.constant.UserConstant;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
-import com.polar.cloudimage.model.dto.picture.PictureEditRequest;
-import com.polar.cloudimage.model.dto.picture.PictureQueryRequest;
-import com.polar.cloudimage.model.dto.picture.PictureUpdateRequest;
-import com.polar.cloudimage.model.dto.picture.PictureUploadRequest;
+import com.polar.cloudimage.model.dto.picture.*;
 import com.polar.cloudimage.model.entity.Picture;
 import com.polar.cloudimage.model.entity.User;
+import com.polar.cloudimage.model.enums.PictureReviewStatusEnum;
 import com.polar.cloudimage.model.vo.PictureTagCategory;
 import com.polar.cloudimage.model.vo.PictureVO;
 import com.polar.cloudimage.service.PictureService;
@@ -59,7 +57,6 @@ public class PictureController {
      * @return 图片视图
      */
     @PostMapping("/upload")
-    @AuthCheck(mushRole = UserConstant.ADMIN_ROLE)
     @ApiOperation(value = "上传图片 &更新图片")
     public BaseResponse<PictureVO> uploadPicture(@RequestPart("file") MultipartFile multipartFile
             , PictureUploadRequest pictureUploadRequest
@@ -73,6 +70,30 @@ public class PictureController {
 
     }
 
+
+    /**
+     * 通过url上传图片 &更新图片
+     *
+     * @param pictureUploadRequest 图片上传请求
+     * @param request              请求
+     * @return 图片视图
+     */
+    @PostMapping("/upload/url")
+    @ApiOperation(value = "URL上传图片 &更新图片")
+    public BaseResponse<PictureVO> uploadPictureByUrl(@RequestBody PictureUploadRequest pictureUploadRequest
+            , HttpServletRequest request) {
+
+        //获取url
+        String url = pictureUploadRequest.getFileUrl();
+        //获取登录用户
+        User loginUser = userService.getLoginUser(request);
+        PictureVO pictureVO = pictureService.uploadPicture(url, pictureUploadRequest, loginUser);
+
+        return ResultUtils.success(pictureVO);
+
+    }
+
+
     /**
      * 删除图片
      *
@@ -82,7 +103,7 @@ public class PictureController {
      */
     @PostMapping("/delete")
     @ApiOperation(value = "删除图片")
-    public BaseResponse<Boolean> deletePicture(@RequestBody DeleteRequest deleteRequest,HttpServletRequest request) {
+    public BaseResponse<Boolean> deletePicture(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         //校验参数
         ThrowUtils.throwIf(deleteRequest == null || deleteRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
         //获取当前登录用户
@@ -96,7 +117,8 @@ public class PictureController {
         return ResultUtils.success(true);
     }
 
-/*     * 更新图片信息
+    /**
+     * 更新图片信息
      *
      * @param pictureUpdateRequest 图片更新请求体
      * @return 是否更新成功
@@ -104,7 +126,8 @@ public class PictureController {
     @PostMapping("/update")
     @AuthCheck(mushRole = UserConstant.ADMIN_ROLE)
     @ApiOperation(value = "更新图片信息")
-    public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest) {
+    public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest, HttpServletRequest request) {
+
         if (pictureUpdateRequest == null || pictureUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -113,6 +136,9 @@ public class PictureController {
         BeanUtils.copyProperties(pictureUpdateRequest, picture);
         // 注意将 list 转为 string
         picture.setTags(JSONUtil.toJsonStr(pictureUpdateRequest.getTags()));
+        //补充审核参数
+        User loginUser = userService.getLoginUser(request);
+        pictureService.fillReviewParams(picture, loginUser);
         // 数据校验
         pictureService.validPicture(picture);
         // 判断是否存在
@@ -125,7 +151,8 @@ public class PictureController {
         return ResultUtils.success(true);
     }
 
-    /** 根据id获取图片信息 仅管理员可用
+    /**
+     * 根据id获取图片信息 仅管理员可用
      *
      * @param id      图片id
      * @param request 请求
@@ -144,7 +171,8 @@ public class PictureController {
     }
 
 
-    /** 根据id获取图片视图 给普通用户使用
+    /**
+     * 根据id获取图片视图 给普通用户使用
      *
      * @param id      图片id
      * @param request 请求
@@ -162,7 +190,8 @@ public class PictureController {
     }
 
 
-    /** 分页获取图片列表 仅管理员可用
+    /**
+     * 分页获取图片列表 仅管理员可用
      *
      * @param pictureQueryRequest 图片查询请求体
      * @return 图片分页
@@ -179,7 +208,8 @@ public class PictureController {
         return ResultUtils.success(picturePage);
     }
 
-    /** 分页获取图片视图列表 给普通用户使用
+    /**
+     * 分页获取图片视图列表 给普通用户使用
      *
      * @param pictureQueryRequest 图片查询请求体
      * @param request             请求
@@ -193,6 +223,9 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        //设置只能查看审核通过的图片
+        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+
         // 查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
                 pictureService.getQueryWrapper(pictureQueryRequest));
@@ -201,7 +234,8 @@ public class PictureController {
     }
 
 
-    /** 编辑图片信息
+    /**
+     * 编辑图片信息
      *
      * @param pictureEditRequest 图片编辑请求体
      * @param request            请求
@@ -223,6 +257,8 @@ public class PictureController {
         // 数据校验
         pictureService.validPicture(picture);
         User loginUser = userService.getLoginUser(request);
+        //补充审核参数
+        pictureService.fillReviewParams(picture, loginUser);
         // 判断是否存在
         long id = pictureEditRequest.getId();
         Picture oldPicture = pictureService.getById(id);
@@ -238,7 +274,8 @@ public class PictureController {
     }
 
 
-    /** 获取图片标签和分类列表
+    /**
+     * 获取图片标签和分类列表
      *
      * @return 图片标签和分类列表
      */
@@ -251,6 +288,22 @@ public class PictureController {
         pictureTagCategory.setTagList(tagList);
         pictureTagCategory.setCategoryList(categoryList);
         return ResultUtils.success(pictureTagCategory);
+    }
+
+    /**
+     * 图片审核
+     *
+     * @param pictureReviewRequest 图片审核请求
+     * @param request              请求
+     * @return 是否审核成功
+     */
+    @PostMapping("/review")
+    @AuthCheck(mushRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> doPictureReview(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
+        //获取登录用户
+        User loginUser = userService.getLoginUser(request);
+        pictureService.doPictureReview(pictureReviewRequest, loginUser);
+        return ResultUtils.success(true);
     }
 
 }

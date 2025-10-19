@@ -13,4 +13,7 @@ public interface PictureConstant {
      * 允许的图片后缀
      */
     final List<String> ALLOW_SUFFIX = Arrays.asList("jpg", "jpeg", "png", "gif");
+
+    final List<String> ALLOW_CONTENT_TYPES = Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/webp");
+
 }
