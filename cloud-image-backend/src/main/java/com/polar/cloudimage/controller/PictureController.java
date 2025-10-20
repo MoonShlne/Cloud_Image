@@ -1,7 +1,11 @@
 package com.polar.cloudimage.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.polar.cloudimage.annotation.AuthCheck;
 import com.polar.cloudimage.common.BaseResponse;
 import com.polar.cloudimage.common.DeleteRequest;
@@ -22,14 +26,18 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author polar
@@ -47,6 +55,17 @@ public class PictureController {
     @Resource
     private PictureService pictureService;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 本地缓存
+     */
+    private final Cache<String, String> LOCAL_CACHE = Caffeine.newBuilder()
+            .initialCapacity(1024)   //初始化空间
+            .maximumSize(10_000L)       //最大容量
+            .expireAfterWrite(Duration.ofMinutes(5))  //写入5分钟后过期
+            .build();
 
     /**
      * 上传图片 &更新图片
@@ -210,7 +229,7 @@ public class PictureController {
 
     /**
      * 分页获取图片视图列表 给普通用户使用
-     *
+     * 实现多级缓存
      * @param pictureQueryRequest 图片查询请求体
      * @param request             请求
      * @return 图片视图分页
@@ -226,14 +245,41 @@ public class PictureController {
         //设置只能查看审核通过的图片
         pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
 
-        // 查询数据库
+        //2. 查询缓存
+        String jsonStr = JSONUtil.toJsonStr(pictureQueryRequest);
+        String hashKey = DigestUtils.md5DigestAsHex(jsonStr.getBytes());
+        String cacheKey = String.format("cloudimage:listPictureVOByPage:%s", hashKey);
+        //先查询本地缓存
+        String localCacheValue = LOCAL_CACHE.getIfPresent(cacheKey);
+        if (localCacheValue != null) {
+            Page<PictureVO> cachedPage = JSONUtil.toBean(localCacheValue, Page.class);
+            return ResultUtils.success(cachedPage);
+        }
+        //本地缓存未命中，查询redis分布式缓存
+        String redisCacheValue = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (redisCacheValue != null) {
+            //存入本地缓存
+            LOCAL_CACHE.put(cacheKey, redisCacheValue);
+            Page<PictureVO> cachedPage = JSONUtil.toBean(redisCacheValue, Page.class);
+            return ResultUtils.success(cachedPage);
+        }
+
+        // 3.查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
                 pictureService.getQueryWrapper(pictureQueryRequest));
+        Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
+        //4. 存入缓存
+        String cacheValue = JSONUtil.toJsonStr(pictureVOPage);
+        //本地缓存
+        LOCAL_CACHE.put(cacheKey, cacheValue);
+        //redis缓存
+        //设置缓存时间 增加随机时间防止雪崩   5分钟+- random
+        int cacheExpireTime = 300 + RandomUtil.randomInt(0, 600);
+        stringRedisTemplate.opsForValue().set(cacheKey, cacheValue, cacheExpireTime, TimeUnit.SECONDS);
         // 获取封装类
-        return ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
+        return ResultUtils.success(pictureVOPage);
+
     }
-
-
     /**
      * 编辑图片信息
      *

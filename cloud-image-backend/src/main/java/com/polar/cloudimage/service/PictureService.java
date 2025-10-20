@@ -3,6 +3,7 @@ package com.polar.cloudimage.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.polar.cloudimage.common.BaseResponse;
 import com.polar.cloudimage.model.dto.picture.PictureQueryRequest;
 import com.polar.cloudimage.model.dto.picture.PictureReviewRequest;
 import com.polar.cloudimage.model.dto.picture.PictureUploadByBatchRequest;
