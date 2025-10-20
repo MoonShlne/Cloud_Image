@@ -299,6 +299,7 @@ public class PictureController {
      */
     @PostMapping("/review")
     @AuthCheck(mushRole = UserConstant.ADMIN_ROLE)
+    @ApiOperation(value = "图片审核")
     public BaseResponse<Boolean> doPictureReview(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
         //获取登录用户
         User loginUser = userService.getLoginUser(request);
@@ -306,4 +307,16 @@ public class PictureController {
         return ResultUtils.success(true);
     }
 
+
+    @PostMapping("/upload/batch")
+    @AuthCheck(mushRole = UserConstant.ADMIN_ROLE)
+    @ApiOperation(value = "批量抓取上传图片")
+    public BaseResponse<Integer> uploadPictureByBatch(@RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
+        //参数校验
+        ThrowUtils.throwIf(pictureUploadByBatchRequest == null, ErrorCode.PARAMS_ERROR, "请求参数错误");
+        //获取登录用户
+        User loginUser = userService.getLoginUser(request);
+        Integer successCount = pictureService.uploadPictureByBach(pictureUploadByBatchRequest, loginUser);
+        return ResultUtils.success(successCount);
+    }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.polar.cloudimage.model.dto.picture.PictureQueryRequest;
 import com.polar.cloudimage.model.dto.picture.PictureReviewRequest;
+import com.polar.cloudimage.model.dto.picture.PictureUploadByBatchRequest;
 import com.polar.cloudimage.model.dto.picture.PictureUploadRequest;
 import com.polar.cloudimage.model.entity.Picture;
 import com.polar.cloudimage.model.entity.User;
@@ -78,4 +79,14 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser 登录用户
      */
     void fillReviewParams(Picture picture, User loginUser);
+
+    /**
+     * 批量上传图片
+     *
+     * @param pictureUploadByBatchRequest 批量上传请求
+     * @param loginUser                   登录用户
+     * @return 上传成功数量
+     */
+    Integer uploadPictureByBach(PictureUploadByBatchRequest pictureUploadByBatchRequest,User loginUser);
+
 }
