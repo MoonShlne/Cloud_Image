@@ -3,18 +3,13 @@ package com.polar.cloudimage.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.polar.cloudimage.common.BaseResponse;
-import com.polar.cloudimage.common.ResultUtils;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
-import com.polar.cloudimage.manager.FileManager;
+import com.polar.cloudimage.manager.CosManager;
 import com.polar.cloudimage.manager.upload.FilePictureUpload;
 import com.polar.cloudimage.manager.upload.PictureUploadTemplate;
 import com.polar.cloudimage.manager.upload.UrlPictureUpload;
@@ -32,7 +27,6 @@ import com.polar.cloudimage.model.vo.UserVO;
 import com.polar.cloudimage.service.PictureService;
 import com.polar.cloudimage.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -40,19 +34,16 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +69,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     private UrlPictureUpload urlPictureUpload;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private CosManager cosManager;
 
     /**
      * 上传图片
@@ -115,7 +108,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         //构造返回值信息
 
         String url = uploadPictureResult.getUrl();
-
+        String thumbnailUrl = uploadPictureResult.getThumbnailUrl();
         String picName = uploadPictureResult.getPicName();
         //如果请求体中有图片名称，则使用请求体中的图片名称
         if (StrUtil.isNotBlank(pictureUploadRequest.getPicName())) {
@@ -130,6 +123,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
         Picture picture = new Picture();
         picture.setUrl(url);
+        picture.setThumbnailUrl(thumbnailUrl);
         picture.setName(picName);
         picture.setPicSize(picSize);
         picture.setPicWidth(picWidth);
@@ -419,7 +413,30 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         return uploadCount;
 
     }
-
+    /**
+     * 清理图片文件
+     *
+     * @param oldPicture 旧图片
+     */
+    @Async
+    @Override
+    public void clearPictureFile(Picture oldPicture) {
+        // 判断该图片是否被多条记录使用
+        String pictureUrl = oldPicture.getUrl();
+        long count = this.lambdaQuery()
+                .eq(Picture::getUrl, pictureUrl)
+                .count();
+        // 有不止一条记录用到了该图片，不清理
+        if (count > 1) {
+            return;
+        }
+        cosManager.deleteObject(oldPicture.getUrl());
+        // 清理缩略图
+        String thumbnailUrl = oldPicture.getThumbnailUrl();
+        if (StrUtil.isNotBlank(thumbnailUrl)) {
+            cosManager.deleteObject(thumbnailUrl);
+        }
+    }
 
 
 }

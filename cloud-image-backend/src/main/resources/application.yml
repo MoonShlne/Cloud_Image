@@ -3,7 +3,10 @@ server:
   port: 8123
   servlet:
     context-path: /api
-
+    #  cookie 过期时间设置为30天
+    session:
+      cookie:
+        max-age: 2592000  # 30天，单位为秒
 #起个名字
 spring:
   application:
@@ -26,6 +29,14 @@ spring:
     database: 1
     connect-timeout: 5000
     password: redis_password
+
+#  session配置
+  session:
+    store-type: redis
+    timeout: 2592000        # 30分钟
+
+
+
 
 #mybatis-plus配置
 mybatis-plus:

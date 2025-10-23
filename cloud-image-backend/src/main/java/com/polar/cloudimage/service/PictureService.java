@@ -11,6 +11,7 @@ import com.polar.cloudimage.model.dto.picture.PictureUploadRequest;
 import com.polar.cloudimage.model.entity.Picture;
 import com.polar.cloudimage.model.entity.User;
 import com.polar.cloudimage.model.vo.PictureVO;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,4 +91,6 @@ public interface PictureService extends IService<Picture> {
      */
     Integer uploadPictureByBach(PictureUploadByBatchRequest pictureUploadByBatchRequest,User loginUser);
 
+    @Async
+    void clearPictureFile(Picture oldPicture);
 }

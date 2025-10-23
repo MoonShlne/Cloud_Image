@@ -133,6 +133,9 @@ public class PictureController {
         //操作数据库
         boolean b = pictureService.removeById(deleteRequest.getId());
         ThrowUtils.throwIf(!b, ErrorCode.SYSTEM_ERROR, "删除图片失败");
+        //清理图片资源
+        Picture oldPicture = pictureService.getById(deleteRequest.getId());
+        pictureService.clearPictureFile(oldPicture);
         return ResultUtils.success(true);
     }
 
@@ -230,6 +233,7 @@ public class PictureController {
     /**
      * 分页获取图片视图列表 给普通用户使用
      * 实现多级缓存
+     *
      * @param pictureQueryRequest 图片查询请求体
      * @param request             请求
      * @return 图片视图分页
@@ -280,6 +284,7 @@ public class PictureController {
         return ResultUtils.success(pictureVOPage);
 
     }
+
     /**
      * 编辑图片信息
      *
