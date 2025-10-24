@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.polar.cloudimage.common.BaseResponse;
-import com.polar.cloudimage.model.dto.picture.PictureQueryRequest;
-import com.polar.cloudimage.model.dto.picture.PictureReviewRequest;
-import com.polar.cloudimage.model.dto.picture.PictureUploadByBatchRequest;
-import com.polar.cloudimage.model.dto.picture.PictureUploadRequest;
+import com.polar.cloudimage.model.dto.picture.*;
 import com.polar.cloudimage.model.entity.Picture;
 import com.polar.cloudimage.model.entity.User;
 import com.polar.cloudimage.model.vo.PictureVO;
@@ -26,7 +23,7 @@ public interface PictureService extends IService<Picture> {
     /**
      * 上传图片
      *
-     * @param inputSource        源文件
+     * @param inputSource          源文件
      * @param pictureUploadRequest 图片上传请求
      * @param loginUser            登录用户
      * @return 图片视图
@@ -34,7 +31,8 @@ public interface PictureService extends IService<Picture> {
     PictureVO uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, User loginUser);
 
 
-    /**     * 获取图片查询包装类
+    /**
+     * 获取图片查询包装类
      *
      * @param pictureQueryRequest 图片查询请求体
      * @return 图片查询包装类
@@ -89,8 +87,37 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser                   登录用户
      * @return 上传成功数量
      */
-    Integer uploadPictureByBach(PictureUploadByBatchRequest pictureUploadByBatchRequest,User loginUser);
+    Integer uploadPictureByBach(PictureUploadByBatchRequest pictureUploadByBatchRequest, User loginUser);
 
+    /**
+     * 异步删除图片文件
+     *
+     * @param oldPicture 旧图片信息
+     */
     @Async
     void clearPictureFile(Picture oldPicture);
+
+    /**
+     * 校验图片操作权限
+     *
+     * @param loginUser 登录用户
+     * @param picture   图片
+     */
+    void checkPictureAuth(User loginUser, Picture picture);
+
+    /**
+     * 删除图片
+     *
+     * @param pictureId 图片id
+     * @param loginUser 登录用户
+     */
+    void deletePicture(long pictureId, User loginUser);
+
+    /**
+     * 编辑图片信息
+     *
+     * @param pictureEditRequest 图片编辑请求体
+     * @param request            请求
+     */
+    void editPicture(PictureEditRequest pictureEditRequest, HttpServletRequest request);
 }
