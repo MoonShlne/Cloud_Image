@@ -2,7 +2,7 @@
   <div id="spaceDetailPage">
     <!-- 空间信息 -->
     <a-flex justify="space-between">
-      <h2>{{ space.spaceName }}（{{ SPACE_TYPE_MAP[space.spaceType] }}）</h2>
+      <h2>{{ space.spaceName }}</h2>
       <a-space size="middle">
         <a-button
           v-if="canUploadPicture"

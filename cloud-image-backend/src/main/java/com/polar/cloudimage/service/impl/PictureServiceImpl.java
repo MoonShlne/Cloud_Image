@@ -242,6 +242,11 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         String sortOrder = pictureQueryRequest.getSortOrder();
         Long spaceId = pictureQueryRequest.getSpaceId();
         boolean nullSpaceId = pictureQueryRequest.isNullSpaceId();
+        //添加时间筛选
+        Date startEditTime = pictureQueryRequest.getStartEditTime();
+        Date endEditTime = pictureQueryRequest.getEndEditTime();
+
+
 
         if (StrUtil.isNotBlank(searchText)) {
             // 需要拼接查询条件
@@ -256,7 +261,6 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         queryWrapper.eq(ObjUtil.isNotEmpty(spaceId), "spaceId", spaceId);
         //如果nullSpaceId为true，则查询spaceId为null的图片
         queryWrapper.isNull(nullSpaceId, "spaceId");
-
         queryWrapper.like(StrUtil.isNotBlank(name), "name", name);
         queryWrapper.like(StrUtil.isNotBlank(introduction), "introduction", introduction);
         queryWrapper.like(StrUtil.isNotBlank(picFormat), "picFormat", picFormat);
@@ -268,6 +272,10 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         queryWrapper.eq(ObjUtil.isNotEmpty(picScale), "picScale", picScale);
         queryWrapper.eq(ObjUtil.isNotEmpty(reviewStatus), "reviewStatus", reviewStatus);
         queryWrapper.eq(ObjUtil.isNotEmpty(reviewerId), "reviewerId", reviewerId);
+
+        //时间
+        queryWrapper.ge(ObjUtil.isNotEmpty(startEditTime), "editTime", startEditTime);
+        queryWrapper.le(ObjUtil.isNotEmpty(endEditTime), "editTime", endEditTime);
 
         //JSON 数组查询
         if (CollUtil.isNotEmpty(tags)) {
