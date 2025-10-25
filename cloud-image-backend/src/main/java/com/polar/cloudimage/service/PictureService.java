@@ -9,9 +9,11 @@ import com.polar.cloudimage.model.entity.Picture;
 import com.polar.cloudimage.model.entity.User;
 import com.polar.cloudimage.model.vo.PictureVO;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author polar
@@ -120,4 +122,24 @@ public interface PictureService extends IService<Picture> {
      * @param request            请求
      */
     void editPicture(PictureEditRequest pictureEditRequest, HttpServletRequest request);
+
+    /**
+     * 根据颜色搜索图片
+     *
+     * @param spaceId  空间id
+     * @param picColor 颜色值
+     * @param loginUser 登录用户
+     * @return 图片列表
+     */
+    List<PictureVO> searchPictureByColor(Long spaceId, String picColor, User loginUser);
+
+
+    /**
+     * 批量编辑图片信息
+     *
+     * @param pictureEditByBatchRequest 图片批量编辑请求体
+     * @param loginUser                 登录用户
+     */
+    @Transactional(rollbackFor = Exception.class)
+    void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
 }

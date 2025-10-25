@@ -5,8 +5,9 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.polar.cloudimage.annotation.AuthCheck;
+import com.polar.cloudimage.api.imagesearch.ImageSearchApiFacade;
+import com.polar.cloudimage.api.imagesearch.module.ImageSearchResult;
 import com.polar.cloudimage.common.BaseResponse;
 import com.polar.cloudimage.common.DeleteRequest;
 import com.polar.cloudimage.common.ResultUtils;
@@ -37,7 +38,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -390,7 +390,13 @@ public class PictureController {
         return ResultUtils.success(true);
     }
 
-
+    /**
+     * 批量抓取上传图片
+     *
+     * @param pictureUploadByBatchRequest 批量上传请求
+     * @param request                     请求
+     * @return 上传成功数量
+     */
     @PostMapping("/upload/batch")
     @AuthCheck(mushRole = UserConstant.ADMIN_ROLE)
     @ApiOperation(value = "批量抓取上传图片")
@@ -402,4 +408,63 @@ public class PictureController {
         Integer successCount = pictureService.uploadPictureByBach(pictureUploadByBatchRequest, loginUser);
         return ResultUtils.success(successCount);
     }
+
+    /**
+     * 以图搜图
+     *
+     * @param searchPictureByPictureRequest 以图搜图请求
+     * @return 图片搜索结果列表
+     */
+    @PostMapping("/search/picture")
+    @ApiOperation(value = "以图搜图")
+    public BaseResponse<List<ImageSearchResult>> searchPictureByPicture(@RequestBody SearchPictureByPictureRequest searchPictureByPictureRequest) {
+        //参数校验
+        ThrowUtils.throwIf(searchPictureByPictureRequest == null, ErrorCode.PARAMS_ERROR, "请求参数错误");
+        Long pictureId = searchPictureByPictureRequest.getPictureId();
+        ThrowUtils.throwIf(pictureId == null || pictureId <= 0, ErrorCode.PARAMS_ERROR, "图片id错误");
+        Picture picture = pictureService.getById(pictureId);
+        ThrowUtils.throwIf(picture == null, ErrorCode.NOT_FOUND_ERROR, "图片不存在");
+
+        List<ImageSearchResult> imageSearchResults = ImageSearchApiFacade.searchImage(picture.getUrl());
+
+        return ResultUtils.success(imageSearchResults);
+    }
+
+
+    /**
+     * 通过颜色搜索图片
+     *
+     * @param searchPictureByColorRequest 颜色搜索请求
+     * @param request                     请求
+     * @return 图片视图列表
+     */
+    @PostMapping("/search/color")
+    @ApiOperation(value = "通过颜色搜索图片")
+    public BaseResponse<List<PictureVO>> searchPictureByColor(@RequestBody SearchPictureByColorRequest searchPictureByColorRequest, HttpServletRequest request) {
+        //参数校验
+        ThrowUtils.throwIf(searchPictureByColorRequest == null, ErrorCode.PARAMS_ERROR, "请求参数错误");
+        Long spaceId = searchPictureByColorRequest.getSpaceId();
+        String picColor = searchPictureByColorRequest.getPicColor();
+        User loginUser = userService.getLoginUser(request);
+        List<PictureVO> pictureVOList = pictureService.searchPictureByColor(spaceId, picColor, loginUser);
+        return ResultUtils.success(pictureVOList);
+
+    }
+    /**
+     * 批量编辑图片信息
+     *
+     * @param pictureEditByBatchRequest 图片批量编辑请求
+     * @param request                   请求
+     * @return 是否编辑成功
+     */
+    @PostMapping("/edit/batch")
+    @ApiOperation(value = "批量编辑图片信息")
+    public BaseResponse<Boolean> editPictureByBatch(@RequestBody PictureEditByBatchRequest pictureEditByBatchRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(pictureEditByBatchRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        pictureService.editPictureByBatch(pictureEditByBatchRequest, loginUser);
+        return ResultUtils.success(true);
+    }
+
+
 }
