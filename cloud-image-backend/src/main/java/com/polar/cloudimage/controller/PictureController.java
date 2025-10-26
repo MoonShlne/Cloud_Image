@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.polar.cloudimage.annotation.AuthCheck;
+import com.polar.cloudimage.api.aliyunai.AliYunAiApi;
+import com.polar.cloudimage.api.aliyunai.model.CreateOutPaintingTaskResponse;
+import com.polar.cloudimage.api.aliyunai.model.GetOutPaintingTaskResponse;
 import com.polar.cloudimage.api.imagesearch.ImageSearchApiFacade;
 import com.polar.cloudimage.api.imagesearch.module.ImageSearchResult;
 import com.polar.cloudimage.common.BaseResponse;
@@ -29,6 +32,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +74,8 @@ public class PictureController {
             .maximumSize(10_000L)       //最大容量
             .expireAfterWrite(Duration.ofMinutes(5))  //写入5分钟后过期
             .build();
+    @Autowired
+    private AliYunAiApi aliYunAiApi;
 
     /**
      * 上传图片 &更新图片
@@ -450,6 +456,7 @@ public class PictureController {
         return ResultUtils.success(pictureVOList);
 
     }
+
     /**
      * 批量编辑图片信息
      *
@@ -466,5 +473,34 @@ public class PictureController {
         return ResultUtils.success(true);
     }
 
+
+
+    /**
+     * 创建图片扩图任务
+     *
+     * @param createPictureOutPaintingTaskRequest 创建图片扩图任务请求体
+     * @param request                             请求
+     * @return 创建的扩图任务响应
+     */
+    @PostMapping("/out_painting/create_task")
+    public BaseResponse<CreateOutPaintingTaskResponse> createPictureOutPaintingTask(@RequestBody CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, HttpServletRequest request) {
+        //请求参数校验里的id和参数都不能为空
+        ThrowUtils.throwIf(createPictureOutPaintingTaskRequest == null
+                || createPictureOutPaintingTaskRequest.getPictureId() == null
+                || createPictureOutPaintingTaskRequest.getPictureId() <= 0
+                || createPictureOutPaintingTaskRequest.getParameters() == null, ErrorCode.PARAMS_ERROR, "请求参数错误");
+        User loginUser = userService.getLoginUser(request);
+        CreateOutPaintingTaskResponse pictureOutPaintingTask = pictureService.createPictureOutPaintingTask(createPictureOutPaintingTaskRequest, loginUser);
+        return ResultUtils.success(pictureOutPaintingTask);
+    }
+
+    //查询扩图任务结果接口
+
+    @GetMapping("/out_painting/get_task")
+    public BaseResponse<GetOutPaintingTaskResponse> getPictureOutPaintingTask(String taskId) {
+        ThrowUtils.throwIf(taskId == null || taskId.isEmpty(), ErrorCode.PARAMS_ERROR, "任务ID不能为空");
+        GetOutPaintingTaskResponse outPaintingTask = aliYunAiApi.getOutPaintingTask(taskId);
+        return ResultUtils.success(outPaintingTask);
+    }
 
 }

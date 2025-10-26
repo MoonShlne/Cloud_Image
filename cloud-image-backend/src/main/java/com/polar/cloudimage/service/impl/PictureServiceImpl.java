@@ -7,6 +7,9 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.polar.cloudimage.api.aliyunai.AliYunAiApi;
+import com.polar.cloudimage.api.aliyunai.model.CreateOutPaintingTaskRequest;
+import com.polar.cloudimage.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
@@ -34,6 +37,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -77,6 +81,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     private SpaceService spaceService;
     @Resource
     private TransactionTemplate transactionTemplate;
+    @Resource
+    private AliYunAiApi aliYunAiApi;
 
     /**
      * 上传图片
@@ -643,6 +649,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
 
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser) {
@@ -686,12 +693,43 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 5. 批量更新
         boolean result = this.updateBatchById(pictureList);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-}
+    }
+
+    /**
+     * 创建图片扩图任务
+     *
+     * @param createPictureOutPaintingTaskRequest 创建图片扩图任务请求体
+     * @param loginUser                           登录用户
+     * @return
+     */
+    @Override
+    public CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser) {
+        //校验参数
+        Long pictureId = createPictureOutPaintingTaskRequest.getPictureId();
+        ThrowUtils.throwIf(pictureId == null || pictureId <= 0, ErrorCode.PARAMS_ERROR, "图片id不能为空");
+        Picture picture = this.getById(pictureId);
+        ThrowUtils.throwIf(picture == null, ErrorCode.NOT_FOUND_ERROR, "图片不存在");
+
+        //校验权限
+        this.checkPictureAuth(loginUser, picture);
+
+        //创建扩图任务       调用api需要更多的参数，前端只传了部分参数，需要补全
+        CreateOutPaintingTaskRequest createOutPaintingTaskRequest = new CreateOutPaintingTaskRequest();
+        CreateOutPaintingTaskRequest.Input input = new CreateOutPaintingTaskRequest.Input();
+        input.setImageUrl(picture.getUrl());
+        createOutPaintingTaskRequest.setInput(input);
+        createOutPaintingTaskRequest.setParameters(createPictureOutPaintingTaskRequest.getParameters());
+
+        //调用阿里云API创建扩图任务
+        CreateOutPaintingTaskResponse outPaintingTaskResponse = aliYunAiApi.createOutPaintingTaskResponse(createOutPaintingTaskRequest);
+        return outPaintingTaskResponse;
+    }
 
     /**
      * nameRule 格式：图片{序号}
-        * @param pictureList 图片列表
-     *   @param nameRule    名称规则
+     *
+     * @param pictureList 图片列表
+     * @param nameRule    名称规则
      */
     private void fillPictureWithNameRule(List<Picture> pictureList, String nameRule) {
         if (CollUtil.isEmpty(pictureList) || StrUtil.isBlank(nameRule)) {
@@ -708,7 +746,6 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "名称解析错误");
         }
     }
-
 
 
 }
