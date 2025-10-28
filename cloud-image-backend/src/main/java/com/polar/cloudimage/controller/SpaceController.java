@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -78,8 +79,9 @@ public class SpaceController {
         //获取当前登录用户
         User loginUser = userService.getLoginUser(request);
         Long id = loginUser.getId();
+        Space oldSpace = SpaceService.getById(deleteRequest.getId());
         //仅管理员或本人可删除空间
-        ThrowUtils.throwIf((!userService.isAdmin(loginUser) && !id.equals(deleteRequest.getId())), ErrorCode.NO_AUTH_ERROR);
+        SpaceService.checkSpaceAuth(loginUser, oldSpace);
         //操作数据库
         boolean b = SpaceService.removeById(deleteRequest.getId());
         ThrowUtils.throwIf(!b, ErrorCode.SYSTEM_ERROR, "删除空间失败");
@@ -225,9 +227,7 @@ public class SpaceController {
         Space oldSpace = SpaceService.getById(id);
         ThrowUtils.throwIf(oldSpace == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可编辑
-        if (!oldSpace.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
+        SpaceService.checkSpaceAuth(loginUser, oldSpace);
         // 操作数据库
         boolean result = SpaceService.updateById(Space);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);

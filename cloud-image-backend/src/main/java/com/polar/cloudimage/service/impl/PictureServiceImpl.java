@@ -524,7 +524,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
     /**
      * 校验图片操作权限
-     *
+     * 对于私有空间和公共空间进行权限隔离
      * @param loginUser 登录用户
      * @param picture   图片
      */

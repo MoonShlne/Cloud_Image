@@ -49,7 +49,7 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
      * 添加空间
      *
      * @param spaceAddRequest 空间添加请求
-     * @param loginUser      登录用户
+     * @param loginUser       登录用户
      * @return 新增空间id
      */
     public long addSpace(SpaceAddRequest spaceAddRequest, User loginUser) {
@@ -222,6 +222,18 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
                 space.setMaxSize(maxSize);
             }
         }
+    }
+
+    /**
+     * 检查空间访问权限
+     *
+     * @param loginUser 登录用户
+     * @param space     空间
+     */
+    @Override
+    public void checkSpaceAuth(User loginUser, Space space) {
+        //仅管理员或本人可删除空间
+        ThrowUtils.throwIf((!userService.isAdmin(loginUser) && !loginUser.getId().equals(space.getUserId())), ErrorCode.NO_AUTH_ERROR);
     }
 }
 
