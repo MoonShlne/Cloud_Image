@@ -7,6 +7,7 @@ import com.polar.cloudimage.constant.UserConstant;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
+import com.polar.cloudimage.manager.auth.StpKit;
 import com.polar.cloudimage.model.dto.user.UserLoginRequest;
 import com.polar.cloudimage.model.dto.user.UserQueryRequest;
 import com.polar.cloudimage.model.dto.user.UserRegisterRequest;
@@ -112,6 +113,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 保存用户登录状态
         request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        // 将用户登录态保存到 sa token中
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(UserConstant.USER_LOGIN_STATE, user);
         return this.getLoginUserVo(user);
 
 
@@ -227,6 +231,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         //删除登录信息
         request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        //从 sa token中注销
+        StpKit.SPACE.logout();
         return true;
     }
 

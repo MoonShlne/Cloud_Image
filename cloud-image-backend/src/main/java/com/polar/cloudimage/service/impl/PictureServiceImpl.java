@@ -560,8 +560,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 判断是否存在
         Picture oldPicture = this.getById(pictureId);
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
-        // 校验权限
-        checkPictureAuth(loginUser, oldPicture);
+        // 校验权限   重构为使用Sa-token注解鉴权
+//        checkPictureAuth(loginUser, oldPicture);
         // 操作数据库
         transactionTemplate.execute(status -> {
             //保存图片信息到数据库
@@ -605,8 +605,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         long id = pictureEditRequest.getId();
         Picture oldPicture = getById(id);
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
-        // 校验权限  上传到不同空间权限不一样
-        checkPictureAuth(loginUser, oldPicture);
+        // 校验权限  上传到不同空间权限不一样    重构为使用Sa-token注解鉴权
+//        checkPictureAuth(loginUser, oldPicture);
         // 操作数据库
         boolean result = updateById(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -710,8 +710,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         Picture picture = this.getById(pictureId);
         ThrowUtils.throwIf(picture == null, ErrorCode.NOT_FOUND_ERROR, "图片不存在");
 
-        //校验权限
-        this.checkPictureAuth(loginUser, picture);
+        //校验权限 重构为使用Sa-token注解鉴权
+//        this.checkPictureAuth(loginUser, picture);
 
         //创建扩图任务       调用api需要更多的参数，前端只传了部分参数，需要补全
         CreateOutPaintingTaskRequest createOutPaintingTaskRequest = new CreateOutPaintingTaskRequest();

@@ -9,6 +9,7 @@ import com.polar.cloudimage.constant.UserConstant;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
+import com.polar.cloudimage.manager.auth.SpaceUserAuthManager;
 import com.polar.cloudimage.model.dto.space.*;
 import com.polar.cloudimage.model.entity.Space;
 import com.polar.cloudimage.model.entity.User;
@@ -20,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,6 +46,8 @@ public class SpaceController {
     private UserService userService;
     @Resource
     private SpaceService SpaceService;
+    @Autowired
+    private SpaceUserAuthManager spaceUserAuthManager;
 
 
     /**
@@ -153,8 +157,14 @@ public class SpaceController {
         // 查询数据库
         Space Space = SpaceService.getById(id);
         ThrowUtils.throwIf(Space == null, ErrorCode.NOT_FOUND_ERROR);
+        SpaceVO spaceVO = SpaceService.getSpaceVO(Space, request);
+        //把权限赋值给spaceVo
+        User loginUser = userService.getLoginUser(request);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(Space, loginUser);
+        // 设置权限列表
+        spaceVO.setPermissionList(permissionList);
         // 获取封装类
-        return ResultUtils.success(SpaceService.getSpaceVO(Space, request));
+        return ResultUtils.success(spaceVO);
     }
 
 
