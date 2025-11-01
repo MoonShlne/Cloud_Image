@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
+import com.polar.cloudimage.manager.sharding.DynamicShardingManager;
 import com.polar.cloudimage.model.dto.space.SpaceAddRequest;
 import com.polar.cloudimage.model.dto.space.SpaceQueryRequest;
 import com.polar.cloudimage.model.entity.Space;
@@ -22,7 +23,7 @@ import com.polar.cloudimage.model.vo.UserVO;
 import com.polar.cloudimage.service.SpaceService;
 import com.polar.cloudimage.mapper.SpaceMapper;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -47,6 +48,10 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
     private TransactionTemplate transactionTemplate;
     @Resource
     private SpaceUserServiceImpl spaceUserServiceImpl;
+    //由于使用分库分表功能跟业务规模不太兼容，而且使用分库分表对代码侵入性强大，所有暂时不使用
+//    @Resource
+//    @Lazy
+//    private DynamicShardingManager dynamicShardingManager;
 
     /**
      * 添加空间
@@ -100,7 +105,9 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
                     //存入数据库
                     ThrowUtils.throwIf(!spaceUserServiceImpl.save(spaceUser), ErrorCode.OPERATION_ERROR, "添加空间成员失败");
                 }
-
+                //由于使用分库分表功能跟业务规模不太兼容，而且使用分库分表对代码侵入性强大，所有暂时不使用
+//                //创建分表(仅对团队空间生效)
+//                dynamicShardingManager.createSpacePictureTable(space);
                 // 返回新写入的数据 id
                 return space.getId();
             });

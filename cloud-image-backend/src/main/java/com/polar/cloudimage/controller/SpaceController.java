@@ -12,10 +12,12 @@ import com.polar.cloudimage.exception.ThrowUtils;
 import com.polar.cloudimage.manager.auth.SpaceUserAuthManager;
 import com.polar.cloudimage.model.dto.space.*;
 import com.polar.cloudimage.model.entity.Space;
+import com.polar.cloudimage.model.entity.SpaceUser;
 import com.polar.cloudimage.model.entity.User;
 import com.polar.cloudimage.model.enums.SpaceLevelEnum;
 import com.polar.cloudimage.model.vo.SpaceVO;
 import com.polar.cloudimage.service.SpaceService;
+import com.polar.cloudimage.service.SpaceUserService;
 import com.polar.cloudimage.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,8 +48,10 @@ public class SpaceController {
     private UserService userService;
     @Resource
     private SpaceService SpaceService;
-    @Autowired
+    @Resource
     private SpaceUserAuthManager spaceUserAuthManager;
+    @Resource
+    private SpaceUserService spaceUserService;
 
 
     /**
@@ -89,6 +93,13 @@ public class SpaceController {
         //操作数据库
         boolean b = SpaceService.removeById(deleteRequest.getId());
         ThrowUtils.throwIf(!b, ErrorCode.SYSTEM_ERROR, "删除空间失败");
+        //从space_user中获取该空间用户的id 集合 然后用批量删除
+        List<SpaceUser> list = spaceUserService.lambdaQuery()
+                .eq(SpaceUser::getSpaceId, deleteRequest.getId()).list();
+        List<Long> spaceUserIds = list.stream().map(SpaceUser::getId).collect(Collectors.toList());
+        if (!spaceUserIds.isEmpty()) {
+            ThrowUtils.throwIf(!spaceUserService.removeByIds(spaceUserIds), ErrorCode.SYSTEM_ERROR, "删除空间成员失败");
+        }
         return ResultUtils.success(true);
     }
 
