@@ -7,6 +7,7 @@ import com.polar.cloudimage.common.ResultUtils;
 import com.polar.cloudimage.exception.BusinessException;
 import com.polar.cloudimage.exception.ErrorCode;
 import com.polar.cloudimage.exception.ThrowUtils;
+import com.polar.cloudimage.manager.auth.StpKit;
 import com.polar.cloudimage.manager.auth.annotation.SaSpaceCheckPermission;
 import com.polar.cloudimage.manager.auth.module.SpaceUserPermissionConstant;
 import com.polar.cloudimage.model.dto.spaceuser.SpaceUserAddRequest;
@@ -122,7 +123,8 @@ public class SpaceUserController {
     @PostMapping("/edit")
     @ApiOperation(value = "编辑成员信息（设置权限）")
     @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.SPACE_USER_MANAGE)
-    public BaseResponse<Boolean> editSpaceUser(@RequestBody SpaceUserEditRequest spaceUserEditRequest) {
+    public BaseResponse<Boolean> editSpaceUser(@RequestBody SpaceUserEditRequest spaceUserEditRequest,
+                                              HttpServletRequest request) {
         if (spaceUserEditRequest == null || spaceUserEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -135,6 +137,9 @@ public class SpaceUserController {
         long id = spaceUserEditRequest.getId();
         SpaceUser oldSpaceUser = spaceUserService.getById(id);
         ThrowUtils.throwIf(oldSpaceUser == null, ErrorCode.NOT_FOUND_ERROR);
+        //不能修改自己权限
+        User loginUser = userService.getLoginUser(request);
+        ThrowUtils.throwIf(oldSpaceUser.getUserId().equals(loginUser.getId()), ErrorCode.PARAMS_ERROR, "不能修改自己权限");
         // 操作数据库
         boolean result = spaceUserService.updateById(spaceUser);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);

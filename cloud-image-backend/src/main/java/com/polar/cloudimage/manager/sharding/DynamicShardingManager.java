@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//由于使用分库分表功能跟业务规模不太兼容，而且使用分库分表对代码侵入性强大，所有暂时不使用
+//由于使用分库分表功能跟业务规模不太匹配，而且使用分库分表对代码侵入性强大，所有暂时不使用
 //@Component
 @Slf4j
 public class DynamicShardingManager {

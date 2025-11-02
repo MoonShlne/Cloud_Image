@@ -48,7 +48,7 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
     private TransactionTemplate transactionTemplate;
     @Resource
     private SpaceUserServiceImpl spaceUserServiceImpl;
-    //由于使用分库分表功能跟业务规模不太兼容，而且使用分库分表对代码侵入性强大，所有暂时不使用
+    //由于使用分库分表功能跟业务规模不太匹配，而且使用分库分表对代码侵入性强大，所有暂时不使用
 //    @Resource
 //    @Lazy
 //    private DynamicShardingManager dynamicShardingManager;
@@ -105,7 +105,7 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
                     //存入数据库
                     ThrowUtils.throwIf(!spaceUserServiceImpl.save(spaceUser), ErrorCode.OPERATION_ERROR, "添加空间成员失败");
                 }
-                //由于使用分库分表功能跟业务规模不太兼容，而且使用分库分表对代码侵入性强大，所有暂时不使用
+                //由于使用分库分表功能跟业务规模不太匹配，而且使用分库分表对代码侵入性强大，所有暂时不使用
 //                //创建分表(仅对团队空间生效)
 //                dynamicShardingManager.createSpacePictureTable(space);
                 // 返回新写入的数据 id
